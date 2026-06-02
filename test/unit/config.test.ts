@@ -14,6 +14,25 @@ describe('Config Utility', () => {
     expect(root.length).toBeGreaterThan(0);
   });
 
+  test('resolveProjectRoot falls back to temp directory if scripts/windows is missing', () => {
+    const fsExistsSpy = spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+      const target = String(p);
+      if (target.endsWith('ziptie.default.config.json')) return true;
+      if (target.endsWith('scripts')) return true;
+      if (target.includes('scripts/windows') || target.includes('scripts\\windows')) return false;
+      return false;
+    });
+    const fsMkdirSpy = spyOn(fs, 'mkdirSync').mockImplementation(() => undefined);
+    const fsWriteSpy = spyOn(fs, 'writeFileSync').mockImplementation(() => {});
+
+    const root = resolveProjectRoot();
+    expect(root).toContain('ziptie-extracted');
+
+    fsExistsSpy.mockRestore();
+    fsMkdirSpy.mockRestore();
+    fsWriteSpy.mockRestore();
+  });
+
   test('loadAndMergeConfig performs deep recursive merge with CLI precedence', () => {
     const fsExistsSpy = spyOn(fs, 'existsSync').mockImplementation((p: any) => {
       const target = String(p);

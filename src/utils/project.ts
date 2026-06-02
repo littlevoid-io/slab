@@ -47,7 +47,7 @@ export function resolveProjectRoot(): string {
   if (process.env.ZIPTIE_USE_EMBEDDED !== 'true') {
     for (const root of potentialRoots) {
       if (
-        fs.existsSync(path.join(root, 'scripts')) &&
+        fs.existsSync(path.join(root, 'scripts', 'windows')) &&
         fs.existsSync(path.join(root, 'ziptie.default.config.json'))
       ) {
         return root;
