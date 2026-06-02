@@ -19,18 +19,12 @@ const defaultAnimation: AnimationConfig = {
   ]
 };
 export function loadVersion(root: string): string {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version || '1.0.0';
-  } catch {
-    return '1.0.0';
-  }
+  try { return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version || '1.0.0'; }
+  catch { return '1.0.0'; }
 }
 export function loadConfig(root: string): AnimationConfig {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(root, 'ziptie.animation.json'), 'utf8'));
-  } catch {
-    return defaultAnimation;
-  }
+  try { return JSON.parse(fs.readFileSync(path.join(root, 'ziptie.animation.json'), 'utf8')); }
+  catch { return defaultAnimation; }
 }
 
 export class ColumnRenderer implements ListrRenderer {
@@ -41,7 +35,6 @@ export class ColumnRenderer implements ListrRenderer {
   private interval: NodeJS.Timeout | null = null;
   private currentFrameIndex = 0;
   private lastLineCount = 0;
-  private maxLeftLines = 0;
   private version = '1.0.0';
   private animationConfig: AnimationConfig;
 
@@ -122,13 +115,22 @@ export class ColumnRenderer implements ListrRenderer {
   }
 
   private mergeColumns(left: string[], right: string[]): string[] {
-    this.maxLeftLines = Math.max(this.maxLeftLines, left.length);
-    const offset = Math.max(this.maxLeftLines - right.length, 0);
-    const maxLines = Math.max(left.length, right.length, offset + right.length);
-    const result: string[] = [];
+    const FIXED_HEIGHT = 15;
+    let leftLines = left;
+    if (leftLines.length > FIXED_HEIGHT) {
+      leftLines = leftLines.slice(-FIXED_HEIGHT);
+    } else {
+      leftLines = [...leftLines];
+      while (leftLines.length < FIXED_HEIGHT) {
+        leftLines.push('');
+      }
+    }
 
-    for (let i = 0; i < maxLines; i++) {
-      const leftLine = left[i] || '';
+    const result: string[] = [];
+    const offset = FIXED_HEIGHT - right.length;
+
+    for (let i = 0; i < FIXED_HEIGHT; i++) {
+      const leftLine = leftLines[i];
       const cleanLeft = leftLine.replace(/\u001b\[[0-9;]*m/g, '');
       const padWidth = Math.max(50 - cleanLeft.length, 0);
       const spacer = ' '.repeat(padWidth) + chalk.cyan('│') + ' ';
