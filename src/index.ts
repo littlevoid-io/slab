@@ -11,6 +11,7 @@ import { loadAndMergeConfig, resolveProjectRoot, printConfig, handleAutoConfirmT
 import { runSetupWizard } from './utils/setupWizard.js';
 import { OS_LOCKDOWN_TASKS } from './tasks.js';
 import { parseCLI } from './utils/cli.js';
+import { ColumnRenderer } from './utils/animation.js';
 
 // Parse command line arguments and overrides using yargs
 const { dryRun, undo, customConfigPath, autoConfirm, overrides } = parseCLI();
@@ -206,7 +207,7 @@ async function main() {
         }
       }
     }
-  ]);
+  ], { renderer: ColumnRenderer });
 
   try {
     await tasks.run();
