@@ -25,8 +25,8 @@ describe('CLI Override Parser', () => {
       'dist/index.js',
       '--computerName', 'TEST-EXHIBIT-99',
       '--timezone', 'Tokyo Standard Time',
-      '--enableDailyReboot', 'false',
-      '--autoRestart', 'true',
+      '--dailyReboot', 'false',
+      '--rebootOnFinish', 'true',
       '--disableScreensaver', 'true',
       '--disableFirewall', '1',
       '--apps', 'Node.js,Git.Git,VSCode',
@@ -35,8 +35,8 @@ describe('CLI Override Parser', () => {
 
     expect(ctx.overrides.system?.computerName).toBe('TEST-EXHIBIT-99');
     expect(ctx.overrides.system?.timezone).toBe('Tokyo Standard Time');
-    expect(ctx.overrides.system?.enableDailyReboot).toBe(false);
-    expect(ctx.overrides.system?.autoRestart).toBe(true);
+    expect(ctx.overrides.system?.dailyReboot).toBe(false);
+    expect(ctx.overrides.system?.rebootOnFinish).toBe(true);
     expect(ctx.overrides.lockdown?.disableScreensaver).toBe(true);
     expect(ctx.overrides.lockdown?.disableFirewall).toBe(true);
     expect(ctx.overrides.packageManager?.apps).toEqual(['Node.js', 'Git.Git', 'VSCode']);
@@ -47,14 +47,14 @@ describe('CLI Override Parser', () => {
       'node',
       'dist/index.js',
       '--system.rebootTime', '04:00',
-      '--system.autoRestart', 'false',
+      '--system.rebootOnFinish', 'false',
       '--lockdown.disableScreensaver', 'false',
       '--lockdown.solidColorBackground', '#000000',
     ];
     const ctx = parseCLI();
 
     expect(ctx.overrides.system?.rebootTime).toBe('04:00');
-    expect(ctx.overrides.system?.autoRestart).toBe(false);
+    expect(ctx.overrides.system?.rebootOnFinish).toBe(false);
     expect(ctx.overrides.lockdown?.disableScreensaver).toBe(false);
     expect(ctx.overrides.lockdown?.solidColorBackground).toBe('#000000');
   });

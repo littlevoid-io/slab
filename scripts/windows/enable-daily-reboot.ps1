@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.system.enableDailyReboot
+$tweakEnabled = $Config.system.dailyReboot
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $taskName = "Daily System Reboot"

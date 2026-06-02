@@ -1,11 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/littlevoid-io/ziptie/main/ziptie.schema.json",
   "system": {
-    "computerName": "EXHIBIT-PC-01",
+    "computerName": "exhibit-pc-01",
     "timezone": "auto",
-    "enableDailyReboot": true,
+    "dailyReboot": true,
     "rebootTime": "06:00",
-    "autoRestart": false
+    "rebootOnFinish": false
   },
   "autologon": {
     "enabled": true,

@@ -92,7 +92,7 @@ Describe "Ziptie Lockdown Script Verification" {
                         }
                     }
                     if ($mockConfig.startupTask) { $mockConfig.startupTask.enabled = $false }
-                    if ($mockConfig.system) { $mockConfig.system.enableDailyReboot = $false }
+                    if ($mockConfig.system) { $mockConfig.system.dailyReboot = $false }
 
                     . $TestScript.FullName -Config $mockConfig
                 } catch {

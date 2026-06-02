@@ -62,7 +62,7 @@ Below is the conceptual blueprint for the `ziptie` configuration and execution m
   "system": {
     "computerName": "EXHIBIT-PC-01",
     "timezone": "Eastern Standard Time",
-    "enableDailyReboot": true,
+    "dailyReboot": true,
     "rebootTime": "03:00"
   },
   "autologon": {

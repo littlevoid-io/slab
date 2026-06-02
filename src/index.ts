@@ -108,7 +108,7 @@ async function main() {
           title: 'Scheduling daily reboot',
           skip: () => {
             if (undo) return false;
-            const val = config.system?.enableDailyReboot;
+            const val = config.system?.dailyReboot;
             if (val === false || val === null || val === undefined) return 'Disabled in configuration';
             return false;
           },
@@ -218,7 +218,7 @@ async function main() {
       outro(chalk.bold.green(' ✅ System locked down.'));
     }
 
-    if (!dryRun && config.system?.autoRestart) {
+    if (!dryRun && config.system?.rebootOnFinish) {
       console.log('');
       outro(chalk.bold.green(' 🔄 Rebooting... '));
       execSync('shutdown /r /t 0 /f', { stdio: 'ignore', windowsHide: true });
