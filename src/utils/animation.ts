@@ -49,6 +49,7 @@ export class ColumnRenderer implements ListrRenderer {
   private interval: NodeJS.Timeout | null = null;
   private currentFrameIndex = 0;
   private lastLineCount = 0;
+  private maxLeftLines = 0;
   private version = '1.0.0';
   private animationConfig: AnimationConfig;
 
@@ -125,9 +126,10 @@ export class ColumnRenderer implements ListrRenderer {
   }
 
   private mergeColumns(left: string[], right: string[]): string[] {
-    const maxLines = Math.max(left.length, right.length);
+    this.maxLeftLines = Math.max(this.maxLeftLines, left.length);
+    const offset = Math.max(this.maxLeftLines - right.length, 0);
+    const maxLines = Math.max(left.length, right.length, offset + right.length);
     const result: string[] = [];
-    const offset = Math.max(left.length - right.length, 0);
 
     for (let i = 0; i < maxLines; i++) {
       const leftLine = left[i] || '';
