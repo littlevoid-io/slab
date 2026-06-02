@@ -16,6 +16,7 @@
     "ziptie.config.json",
     "ziptie.default.config.json",
     "ziptie.schema.json",
+    "ziptie.animation.json",
     "scripts",
     "setup.bat"
   ],

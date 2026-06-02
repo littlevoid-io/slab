@@ -39,7 +39,7 @@ if (fs.existsSync(scriptsDir)) {
 }
 
 // 2. Add config and schema files
-const configFiles = ['ziptie.default.config.json', 'ziptie.schema.json'];
+const configFiles = ['ziptie.default.config.json', 'ziptie.schema.json', 'ziptie.animation.json'];
 for (const confFile of configFiles) {
   const filePath = path.join(projectRoot, confFile);
   if (fs.existsSync(filePath)) {
