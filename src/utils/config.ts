@@ -83,9 +83,9 @@ export function loadAndMergeConfig(
     delete cliOverrides.lockdown;
   }
 
-  let mergedConfig = deepmerge(defaultConfig, userConfig, mergeOptions);
+  let mergedConfig: any = deepmerge(defaultConfig, userConfig, mergeOptions);
   if (cliOverrides && Object.keys(cliOverrides).length > 0) {
-    mergedConfig = deepmerge(mergedConfig, cliOverrides, mergeOptions);
+    mergedConfig = deepmerge(mergedConfig, cliOverrides, mergeOptions) as any;
   }
 
   const configDir = path.dirname(configFilePath);

@@ -30,6 +30,7 @@ export function loadConfig(root: string): AnimationConfig {
 export class ColumnRenderer implements ListrRenderer {
   public static nonTTY = false;
   public static rendererOptions = {};
+  public static rendererTaskOptions = {};
   public static rendererWithOutput = true;
 
   private interval: NodeJS.Timeout | null = null;
@@ -127,14 +128,15 @@ export class ColumnRenderer implements ListrRenderer {
     const FIXED_HEIGHT = 15, leftLines = [...left];
     while (leftLines.length < FIXED_HEIGHT) leftLines.push('');
     const sliced = leftLines.slice(-FIXED_HEIGHT), result: string[] = [];
-    const offset = FIXED_HEIGHT - right.length;
+    const tIdx = right.findIndex((l) => l.includes('ziptie v') || l.includes('v' + this.version));
+    const title = tIdx !== -1 ? right[tIdx] : '';
+    const frame = right.filter((_, idx) => idx !== tIdx);
+    const startRow = FIXED_HEIGHT - frame.length;
     for (let i = 0; i < FIXED_HEIGHT; i++) {
-      const leftLine = sliced[i];
-      const padWidth = Math.max(50 - leftLine.replace(/\u001b\[[0-9;]*m/g, '').length, 0);
-      const spacer = ' '.repeat(padWidth) + chalk.cyan('│') + ' ';
-      const rightIndex = i - offset;
-      const rightLine = rightIndex >= 0 && rightIndex < right.length ? right[rightIndex] : '';
-      result.push(leftLine + spacer + chalk.bold.magenta(rightLine));
+      const pad = Math.max(50 - sliced[i].replace(/\u001b\[[0-9;]*m/g, '').length, 0);
+      const spacer = ' '.repeat(pad) + chalk.cyan('│') + ' ';
+      const rightLine = i === 0 ? title : (i >= startRow ? frame[i - startRow] : '');
+      result.push(sliced[i] + spacer + chalk.bold.magenta(rightLine));
     }
     return result;
   }

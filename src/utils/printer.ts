@@ -51,47 +51,21 @@ function formatSettingLine(
   return chalk.dim(`  ${label}:${padding} ${formattedVal}`);
 }
 
-function printCategory(
-  title: string,
-  configCat: any,
-  defaultCat: any,
-): void {
+function printCategory(title: string, configCat: any, defaultCat: any): void {
   console.log(`\n${chalk.bold(title)}:`);
   const keys = Object.keys(configCat);
   if (keys.length === 0) return;
-  const maxLen = Math.max(...keys.map((k) => toUserFriendlyLabel(k).length));
-  for (const key of keys) {
-    const isCustom = !isEqual(configCat[key], defaultCat[key], key);
-    const labelLen = toUserFriendlyLabel(key).length;
-    const padding = ' '.repeat(maxLen - labelLen);
-    const line = formatSettingLine(key, configCat[key], defaultCat[key], isCustom, padding);
-    console.log(line);
-  }
-}
-
-function getUnmodifiedWindowsLabel(key: string, val: any): string {
-  const label = toUserFriendlyLabel(key);
-  if (typeof val === 'boolean') return label;
-  return `${label} (${formatValue(val)})`;
-}
-
-function printWindowsCategory(configCat: any, defaultCat: any): void {
-  console.log(`\n${chalk.bold('Windows')}:`);
-  const keys = Object.keys(configCat);
-  const customKeys = keys.filter((k) => !isEqual(configCat[k], defaultCat[k], k));
-  const defaultKeys = keys.filter((k) => isEqual(configCat[k], defaultCat[k], k));
-  if (customKeys.length > 0) {
-    const maxLen = Math.max(...customKeys.map((k) => toUserFriendlyLabel(k).length));
-    for (const key of customKeys) {
-      const padding = ' '.repeat(maxLen - toUserFriendlyLabel(key).length);
-      console.log(formatSettingLine(key, configCat[key], defaultCat[key], true, padding));
+  const customs = keys.filter((k) => !isEqual(configCat[k], defaultCat[k], k));
+  const defaults = keys.length - customs.length;
+  if (customs.length > 0) {
+    const maxLen = Math.max(...customs.map((k) => toUserFriendlyLabel(k).length));
+    for (const k of customs) {
+      const pad = ' '.repeat(maxLen - toUserFriendlyLabel(k).length);
+      console.log(formatSettingLine(k, configCat[k], defaultCat[k], true, pad));
     }
-    console.log('');
   }
-  if (defaultKeys.length > 0) {
-    const labels = defaultKeys.map((k) => getUnmodifiedWindowsLabel(k, configCat[k]));
-    console.log(chalk.dim(`  Active Defaults:`));
-    console.log(chalk.dim(`  ${labels.join(', ')}`));
+  if (defaults > 0) {
+    console.log(chalk.dim(`  Applying ${defaults} default setting${defaults === 1 ? '' : 's'}`));
   }
 }
 
@@ -121,10 +95,7 @@ function resolveDefaultConfigPaths(defaultConfig: any, customConfigPath: string 
   }
 }
 
-export function printConfig(
-  config: any,
-  customConfigPath: string | null = null,
-): void {
+export function printConfig(config: any, customConfigPath: string | null = null): void {
   console.log(chalk.bold.cyan('\n⚙️  Settings Overview:'));
   const defaultConfig = loadDefaultConfig();
   resolveDefaultConfigPaths(defaultConfig, customConfigPath);
@@ -133,10 +104,10 @@ export function printConfig(
     { key: 'autologon', title: 'Autologon' },
     { key: 'startupTask', title: 'Startup Task' },
     { key: 'packageManager', title: 'Package Manager' },
+    { key: 'windows', title: 'Windows' },
   ];
   for (const { key, title } of categories) {
     printCategory(title, config[key] || {}, defaultConfig[key] || {});
   }
-  printWindowsCategory(config.windows || {}, defaultConfig.windows || {});
   console.log('');
 }
