@@ -50,7 +50,6 @@ export class ColumnRenderer implements ListrRenderer {
       this.currentFrameIndex = (this.currentFrameIndex + 1) % this.animationConfig.frames.length;
       this.draw();
     }, this.animationConfig.metadata.speedMs || 150);
-
     this.subscribeToTasks(this.tasks);
   }
 
@@ -61,69 +60,78 @@ export class ColumnRenderer implements ListrRenderer {
   }
 
   private subscribeToTasks(tasks: any[]): void {
-    tasks.forEach(task => {
-      task.on('STATE', () => this.draw());
-      task.on('OUTPUT', () => this.draw());
-      task.on('SUBTASK', (sub: any[]) => Array.isArray(sub) && this.subscribeToTasks(sub));
-      if (task.subtasks) this.subscribeToTasks(task.subtasks);
+    tasks.forEach(t => {
+      t.on('STATE', () => this.draw());
+      t.on('OUTPUT', () => this.draw());
+      t.on('SUBTASK', (s: any[]) => Array.isArray(s) && this.subscribeToTasks(s));
+      if (t.subtasks) this.subscribeToTasks(t.subtasks);
     });
   }
 
   private draw(): void {
     const tasksOutput: string[] = [];
     this.tasks.forEach(task => this.formatTask(task, tasksOutput));
-
     const width = this.animationConfig.metadata.width || 25;
-    const rawFrame = this.animationConfig.frames[this.currentFrameIndex];
-    const rightColumn = rawFrame.map(line => {
-      if (line.includes('{{VERSION}}')) {
-        const text = `ziptie v${this.version}`;
-        const padTotal = width - text.length;
-        const padLeft = Math.floor(padTotal / 2);
-        const padRight = padTotal - padLeft;
-        return ' '.repeat(padLeft) + text + ' '.repeat(padRight);
-      }
-      return line;
+    const rightColumn = this.animationConfig.frames[this.currentFrameIndex].map(l => {
+      if (!l.includes('{{VERSION}}')) return l;
+      const txt = `ziptie v${this.version}`, pad = width - txt.length;
+      const L = Math.floor(pad / 2);
+      return ' '.repeat(L) + txt + ' '.repeat(pad - L);
     });
     const mergedOutput = this.mergeColumns(tasksOutput, rightColumn);
-
-    if (this.lastLineCount > 0) {
-      process.stdout.write(`\u001b[${this.lastLineCount}A`);
-    }
-
-    const outputString = mergedOutput.map(line => `\u001b[K${line}`).join('\n') + '\n\u001b[J';
-    process.stdout.write(outputString);
+    if (this.lastLineCount > 0) process.stdout.write(`\u001b[${this.lastLineCount}A`);
+    process.stdout.write(mergedOutput.map(l => `\u001b[K${l}`).join('\n') + '\n\u001b[J');
     this.lastLineCount = mergedOutput.length;
   }
 
+  private getIcon(task: any): string {
+    if (task.isCompleted()) return chalk.green('√');
+    if (task.hasFailed()) return chalk.red('x');
+    if (task.isSkipped()) return chalk.yellow('-');
+    return task.isPending() ? chalk.cyan('>') : '.';
+  }
+
+  private getSubtaskRange(subtasks: any[], remaining: number): { start: number; end: number; showTop: boolean; showBottom: boolean } {
+    const N = subtasks.length;
+    if (N <= remaining) return { start: 0, end: N - 1, showTop: false, showBottom: false };
+    let activeIndex = subtasks.findIndex((s: any) => s.isPending());
+    if (activeIndex === -1) activeIndex = subtasks.findIndex((s: any) => !s.isCompleted() && !s.isSkipped());
+    activeIndex = Math.max(0, activeIndex === -1 ? N - 1 : activeIndex);
+    let start = Math.max(0, activeIndex - 1), end = start + remaining - 1;
+    if (start === 0) end = remaining - 2;
+    else if (N - start + 1 <= remaining) { end = N - 1; start = N - remaining + 1; }
+    else end = start + remaining - 3;
+    if (end >= N - 1) { end = N - 1; start = N - remaining + 1; }
+    return { start, end, showTop: start > 0, showBottom: end < N - 1 };
+  }
+
   private formatTask(task: any, lines: string[], depth = 0): void {
-    const indent = ' '.repeat(depth * 2);
-    let statusIcon = '.';
-    if (task.isCompleted()) statusIcon = chalk.green('√');
-    else if (task.hasFailed()) statusIcon = chalk.red('x');
-    else if (task.isSkipped()) statusIcon = chalk.yellow('-');
-    else if (task.isPending()) statusIcon = chalk.cyan('>');
-
-    lines.push(`${indent}${statusIcon} ${task.title || 'Untitled'}`);
-
-    if (task.hasSubtasks() && (!task.isCompleted() || depth > 0)) {
-      const subs = task.subtasks;
-      const active = depth === 0 ? Math.max(0, subs.findIndex((s: any) => s.isPending()) - 1) : 0;
-      subs.forEach((s: any, idx: number) => idx >= active && this.formatTask(s, lines, depth + 1));
+    lines.push(`${' '.repeat(depth * 2)}${this.getIcon(task)} ${task.title || 'Untitled'}`);
+    const active = depth === 0 ? (task.isPending() || task.hasFailed()) : !task.isCompleted();
+    if (!task.hasSubtasks() || !active) return;
+    const subtasks = task.subtasks;
+    if (depth === 0) {
+      const remaining = Math.max(3, 15 - this.tasks.length);
+      const { start, end, showTop, showBottom } = this.getSubtaskRange(subtasks, remaining);
+      if (showTop) lines.push(chalk.dim('  ...'));
+      subtasks.forEach((s: any, i: number) => {
+        if (i >= start && i <= end) this.formatTask(s, lines, depth + 1);
+      });
+      if (showBottom) lines.push(chalk.dim('  ...'));
+    } else {
+      subtasks.forEach((s: any) => this.formatTask(s, lines, depth + 1));
     }
   }
 
   private mergeColumns(left: string[], right: string[]): string[] {
-    const maxLines = Math.max(left.length, right.length);
-    const result: string[] = [];
-    const offset = Math.max(left.length - right.length, 0);
-
-    for (let i = 0; i < maxLines; i++) {
-      const leftLine = left[i] || '';
-      const cleanLeft = leftLine.replace(/\u001b\[[0-9;]*m/g, '');
-      const padWidth = Math.max(50 - cleanLeft.length, 0);
+    const FIXED_HEIGHT = 15, leftLines = [...left];
+    while (leftLines.length < FIXED_HEIGHT) leftLines.push('');
+    const sliced = leftLines.slice(-FIXED_HEIGHT), result: string[] = [];
+    const offset = FIXED_HEIGHT - right.length;
+    for (let i = 0; i < FIXED_HEIGHT; i++) {
+      const leftLine = sliced[i];
+      const padWidth = Math.max(50 - leftLine.replace(/\u001b\[[0-9;]*m/g, '').length, 0);
       const spacer = ' '.repeat(padWidth) + chalk.cyan('│') + ' ';
-
       const rightIndex = i - offset;
       const rightLine = rightIndex >= 0 && rightIndex < right.length ? right[rightIndex] : '';
       result.push(leftLine + spacer + chalk.bold.magenta(rightLine));
