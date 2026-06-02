@@ -114,22 +114,12 @@ export class ColumnRenderer implements ListrRenderer {
   }
 
   private mergeColumns(left: string[], right: string[]): string[] {
-    const FIXED_HEIGHT = 18;
-    let leftLines = left;
-    if (leftLines.length > FIXED_HEIGHT) {
-      leftLines = leftLines.slice(-FIXED_HEIGHT);
-    } else {
-      leftLines = [...leftLines];
-      while (leftLines.length < FIXED_HEIGHT) {
-        leftLines.push('');
-      }
-    }
-
+    const maxLines = Math.max(left.length, right.length);
     const result: string[] = [];
-    const offset = FIXED_HEIGHT - right.length;
+    const offset = Math.max(left.length - right.length, 0);
 
-    for (let i = 0; i < FIXED_HEIGHT; i++) {
-      const leftLine = leftLines[i];
+    for (let i = 0; i < maxLines; i++) {
+      const leftLine = left[i] || '';
       const cleanLeft = leftLine.replace(/\u001b\[[0-9;]*m/g, '');
       const padWidth = Math.max(50 - cleanLeft.length, 0);
       const spacer = ' '.repeat(padWidth) + chalk.cyan('│') + ' ';
