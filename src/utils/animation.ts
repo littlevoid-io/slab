@@ -1,9 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import chalk from 'chalk';
-import { ListrRenderer, ListrTask } from 'listr2';
+import { ListrRenderer } from 'listr2';
 import { resolveProjectRoot } from './project.js';
-
 export interface AnimationConfig {
   metadata: {
     speedMs?: number;
@@ -11,7 +10,6 @@ export interface AnimationConfig {
   };
   frames: string[][];
 }
-
 const defaultAnimation: AnimationConfig = {
   metadata: { speedMs: 150, width: 25 },
   frames: [
@@ -20,7 +18,6 @@ const defaultAnimation: AnimationConfig = {
     [" (((====))) ", "((((====))))", "   ziptie   ", "   v{{VERSION}}  "]
   ]
 };
-
 export function loadVersion(root: string): string {
   const packagePath = path.join(root, 'package.json');
   if (fs.existsSync(packagePath)) {
@@ -32,7 +29,6 @@ export function loadVersion(root: string): string {
   }
   return '1.0.0';
 }
-
 export function loadConfig(root: string): AnimationConfig {
   const configPath = path.join(root, 'ziptie.animation.json');
   if (fs.existsSync(configPath)) {
@@ -56,7 +52,7 @@ export class ColumnRenderer implements ListrRenderer {
   private version = '1.0.0';
   private animationConfig: AnimationConfig;
 
-  constructor(private tasks: ListrTask<any, any>[], private options: any) {
+  constructor(private tasks: any[], private options: any) {
     const root = resolveProjectRoot();
     this.version = loadVersion(root);
     this.animationConfig = loadConfig(root);
@@ -69,11 +65,7 @@ export class ColumnRenderer implements ListrRenderer {
       this.draw();
     }, speed);
 
-    this.tasks.forEach(task => {
-      task.subscribe(() => {
-        this.draw();
-      });
-    });
+    this.subscribeToTasks(this.tasks);
   }
 
   public end(err?: Error): void {
@@ -83,9 +75,22 @@ export class ColumnRenderer implements ListrRenderer {
     this.draw();
   }
 
-  private draw(): void {
-    this.clearLastOutput();
+  private subscribeToTasks(tasks: any[]): void {
+    tasks.forEach(task => {
+      task.on('STATE', () => this.draw());
+      task.on('OUTPUT', () => this.draw());
+      task.on('SUBTASK', (subtasks: any[]) => {
+        if (Array.isArray(subtasks)) {
+          this.subscribeToTasks(subtasks);
+        }
+      });
+      if (task.subtasks) {
+        this.subscribeToTasks(task.subtasks);
+      }
+    });
+  }
 
+  private draw(): void {
     const tasksOutput: string[] = [];
     this.tasks.forEach(task => this.formatTask(task, tasksOutput));
 
@@ -93,24 +98,23 @@ export class ColumnRenderer implements ListrRenderer {
     const rightColumn = rawFrame.map(line => line.replace(/\{\{VERSION\}\}/g, this.version));
     const mergedOutput = this.mergeColumns(tasksOutput, rightColumn);
 
-    process.stdout.write(mergedOutput.join('\n') + '\n');
+    if (this.lastLineCount > 0) {
+      process.stdout.write(`\u001b[${this.lastLineCount}A`);
+    }
+
+    const outputString = mergedOutput.map(line => `\u001b[K${line}`).join('\n') + '\n\u001b[J';
+    process.stdout.write(outputString);
     this.lastLineCount = mergedOutput.length;
   }
 
-  private clearLastOutput(): void {
-    if (this.lastLineCount > 0) {
-      process.stdout.write(`\u001b[${this.lastLineCount}A\u001b[0J`);
-    }
-  }
-
-  private formatTask(task: ListrTask<any, any>, lines: string[], depth = 0): void {
+  private formatTask(task: any, lines: string[], depth = 0): void {
     const indent = ' '.repeat(depth * 2);
-    let statusIcon = '⏳';
+    let statusIcon = '.';
     
-    if (task.isCompleted()) statusIcon = chalk.green('✔');
-    else if (task.isFailed()) statusIcon = chalk.red('✖');
-    else if (task.isSkipped()) statusIcon = chalk.yellow('⚠');
-    else if (task.isPending()) statusIcon = chalk.cyan('⠋');
+    if (task.isCompleted()) statusIcon = chalk.green('√');
+    else if (task.hasFailed()) statusIcon = chalk.red('x');
+    else if (task.isSkipped()) statusIcon = chalk.yellow('-');
+    else if (task.isPending()) statusIcon = chalk.cyan('>');
 
     const title = task.title || 'Untitled';
     lines.push(`${indent}${statusIcon} ${title}`);
