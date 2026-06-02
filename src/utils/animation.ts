@@ -3,6 +3,8 @@ import * as path from 'node:path';
 import chalk from 'chalk';
 import { ListrRenderer } from 'listr2';
 import { resolveProjectRoot } from './project.js';
+import { VERSION } from '../assets.js';
+
 export interface AnimationConfig {
   metadata: {
     speedMs?: number;
@@ -18,9 +20,8 @@ const defaultAnimation: AnimationConfig = {
     [" (((====))) ", "((((====))))", "   ziptie   ", "   v{{VERSION}}  "]
   ]
 };
-export function loadVersion(root: string): string {
-  try { return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version || '1.0.0'; }
-  catch { return '1.0.0'; }
+export function loadVersion(): string {
+  return VERSION;
 }
 export function loadConfig(root: string): AnimationConfig {
   try { return JSON.parse(fs.readFileSync(path.join(root, 'ziptie.animation.json'), 'utf8')); }
@@ -36,12 +37,11 @@ export class ColumnRenderer implements ListrRenderer {
   private interval: NodeJS.Timeout | null = null;
   private currentFrameIndex = 0;
   private lastLineCount = 0;
-  private version = '1.0.0';
+  private version = VERSION;
   private animationConfig: AnimationConfig;
 
   constructor(private tasks: any[], private options: any) {
     const root = resolveProjectRoot();
-    this.version = loadVersion(root);
     this.animationConfig = loadConfig(root);
   }
 
