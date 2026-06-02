@@ -52,6 +52,7 @@ export class ColumnRenderer implements ListrRenderer {
   }
 
   public render(): void {
+    process.stdout.write('\u001b[?25l');
     const speed = this.animationConfig.metadata.speedMs || 150;
     this.interval = setInterval(() => {
       this.currentFrameIndex = (this.currentFrameIndex + 1) % this.animationConfig.frames.length;
@@ -62,24 +63,17 @@ export class ColumnRenderer implements ListrRenderer {
   }
 
   public end(err?: Error): void {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
+    if (this.interval) clearInterval(this.interval);
     this.draw();
+    process.stdout.write('\u001b[?25h');
   }
 
   private subscribeToTasks(tasks: any[]): void {
     tasks.forEach(task => {
       task.on('STATE', () => this.draw());
       task.on('OUTPUT', () => this.draw());
-      task.on('SUBTASK', (subtasks: any[]) => {
-        if (Array.isArray(subtasks)) {
-          this.subscribeToTasks(subtasks);
-        }
-      });
-      if (task.subtasks) {
-        this.subscribeToTasks(task.subtasks);
-      }
+      task.on('SUBTASK', (sub: any[]) => Array.isArray(sub) && this.subscribeToTasks(sub));
+      if (task.subtasks) this.subscribeToTasks(task.subtasks);
     });
   }
 
