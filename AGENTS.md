@@ -1,7 +1,7 @@
 # ziptie
 ## Goals, Architecture, and Agent Mandates
 
-`ziptie` is a modern, quirky, zero-dependency, and air-gap friendly Windows 11 system bootstrapping and kiosk lockdown framework. It is a complete modernization and port of the legacy Bluecadet `@bluecadet/launchpad-scaffold` (also referred to as `little-bootstrap`).
+`ziptie` is a modern, quirky, zero-dependency, and air-gap friendly Windows 11 system bootstrapping and kiosk lockdown framework.
 
 Just like a high-tensile physical ziptie, it wraps around your operating system to secure, strap down, bundle, and lock in all system configurations, establishing a perfectly clean and secure foundation supporting high-fidelity interactive museum exhibits, gallery installations, and unattended digital signage.
 
@@ -48,7 +48,7 @@ The Tech Researcher surveyed the web for leading Windows optimization and config
 - **Win11Debloat**: Showed how to configure settings specifically for **Audit Mode/Sysprep**, allowing exhibit builders to create and configure a golden image before cloning it to multiple machines.
 
 ### C. Brainstormer Agent: The Birth of `ziptie`
-To replace the outdated `@bluecadet/launchpad-scaffold` and `little-bootstrap` names, we brainstormed tactile, physical metaphors based on groundwork and foundations. `ziptie` was selected as the ultimate physical metaphor for holding things tight and tidy, strapping down your OS configuration.
+To name the tool, we brainstormed tactile, physical metaphors based on groundwork and foundations. `ziptie` was selected as the ultimate physical metaphor for holding things tight and tidy, strapping down your OS configuration.
 
 ---
 
