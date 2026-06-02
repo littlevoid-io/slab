@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.uninstallBloatware
+$tweakEnabled = $Config.windows.uninstallBloatware
 if ($Undo) {
     Write-Host "UWP Bloatware uninstallation cannot be automatically undone. Skipping." -ForegroundColor Yellow
     return

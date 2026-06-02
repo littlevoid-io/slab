@@ -1,4 +1,4 @@
-# Common initializer for Ziptie lockdown scripts
+# Common initializer for Ziptie Windows OS settings scripts
 
 $script:ziptieDryRun = $DryRun
 $ziptieRegistryHelper = "$PSScriptRoot/ziptie-set-registry.ps1"

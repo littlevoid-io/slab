@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.uninstallOneDrive
+$tweakEnabled = $Config.windows.uninstallOneDrive
 
 if ($Undo) {
     Write-Host "OneDrive uninstallation cannot be automatically undone. Skipping." -ForegroundColor Yellow

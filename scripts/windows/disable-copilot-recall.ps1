@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableCopilotRecall
+$tweakEnabled = $Config.windows.disableCopilotRecall
 $shouldUndo = $Undo -or !$tweakEnabled
 
 # HKLM system-wide paths

@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableErrorReporting
+$tweakEnabled = $Config.windows.disableErrorReporting
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKLM:\Software\Microsoft\Windows\Windows Error Reporting"

@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableNewNetworkWindow
+$tweakEnabled = $Config.windows.disableNewNetworkWindow
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKLM:\SYSTEM\CurrentControlSet\Control\Network\NewNetworkWindowOff"

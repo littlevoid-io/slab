@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.configureExplorer
+$tweakEnabled = $Config.windows.configureExplorer
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $userPaths = @("HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer")

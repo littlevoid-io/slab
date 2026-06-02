@@ -7,7 +7,7 @@ describe('PowerShell Executor', () => {
     mock.restore();
   });
 
-  test('assembles and runs standard lockdown commands safely', async () => {
+  test('assembles and runs standard Windows settings commands safely', async () => {
     const spawnSpy = spyOn(child_process, 'spawn').mockImplementation((cmd: any, args: any) => {
       const mockProcess: any = {
         stdout: { on: (event: string, cb: Function) => cb(Buffer.from('')) },

@@ -1,4 +1,4 @@
-Describe "Ziptie Lockdown Script Verification" {
+Describe "Ziptie Windows OS Settings Script Verification" {
     BeforeAll {
         $global:ZiptieTestMode = $true
 
@@ -67,7 +67,7 @@ Describe "Ziptie Lockdown Script Verification" {
                     . $TestScript.FullName -Config $mockConfig
                 } catch {
                     $global:Error.Clear()
-                    throw "Lockdown script $($TestScript.Name) failed: $_"
+                    throw "Windows OS settings script $($TestScript.Name) failed: $_"
                 }
             }
 
@@ -86,8 +86,8 @@ Describe "Ziptie Lockdown Script Verification" {
                 param($TestScript)
                 try {
                     $mockConfig = Get-Content -Raw -Path $defaultConfigPath | ConvertFrom-Json
-                    if ($mockConfig.lockdown) {
-                        foreach ($prop in $mockConfig.lockdown.PSObject.Properties) {
+                    if ($mockConfig.windows) {
+                        foreach ($prop in $mockConfig.windows.PSObject.Properties) {
                             if ($prop.Value -eq $true) { $prop.Value = $false }
                         }
                     }

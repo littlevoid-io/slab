@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableEdgeSwipes
+$tweakEnabled = $Config.windows.disableEdgeSwipes
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EdgeUI"

@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableOOBEPrompts
+$tweakEnabled = $Config.windows.disableOOBEPrompts
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $hkcuPaths = @("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement", "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager")

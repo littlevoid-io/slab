@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$bgConfig = $Config.lockdown.solidColorBackground
+$bgConfig = $Config.windows.solidColorBackground
 $shouldUndo = $Undo -or ($null -eq $bgConfig) -or ($bgConfig -eq $false)
 
 $r = 0

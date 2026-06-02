@@ -30,7 +30,7 @@
       "Git.Git"
     ]
   },
-  "lockdown": {
+  "windows": {
     "disableScreensaver": true,
     "disableAccessibilityShortcuts": true,
     "disableEdgeSwipes": true,

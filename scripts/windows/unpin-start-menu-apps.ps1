@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.unpinStartMenuApps
+$tweakEnabled = $Config.windows.unpinStartMenuApps
 $shouldUndo = $Undo -or !$tweakEnabled
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"

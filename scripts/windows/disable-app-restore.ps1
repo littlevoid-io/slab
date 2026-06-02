@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableAppRestore
+$tweakEnabled = $Config.windows.disableAppRestore
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"

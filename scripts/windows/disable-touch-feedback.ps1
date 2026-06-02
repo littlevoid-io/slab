@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableTouchFeedback
+$tweakEnabled = $Config.windows.disableTouchFeedback
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $hkcuPaths = @("HKCU:\Control Panel\Cursors", "HKCU:\Software\Microsoft\Wisp\Touch", "HKCU:\Software\Microsoft\Wisp\Pen\SysEventParameters")

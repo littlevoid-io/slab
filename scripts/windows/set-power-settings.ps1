@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.setPowerSettings
+$tweakEnabled = $Config.windows.setPowerSettings
 $shouldUndo = $Undo -or !$tweakEnabled
 
 if ($shouldUndo) {

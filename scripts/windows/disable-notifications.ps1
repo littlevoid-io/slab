@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableNotifications
+$tweakEnabled = $Config.windows.disableNotifications
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $explorerPath = "HKCU:\Software\Policies\Microsoft\Windows\Explorer"

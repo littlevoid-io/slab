@@ -21,11 +21,11 @@ export const runPowerShellScript = (
     const resolvedPath = path.resolve(scriptPath);
     const escapedScriptPath = resolvedPath.replace(/'/g, "''");
     const escapedConfigPath = path.resolve(configPath).replace(/'/g, "''");
-    const isLockdownScript =
+    const isWindowsSettingsScript =
       resolvedPath.includes('scripts/windows') || resolvedPath.includes('scripts\\windows');
 
     let scriptCmd = '';
-    if (isLockdownScript) {
+    if (isWindowsSettingsScript) {
       scriptCmd += `$config = Get-Content -Raw -Path '${escapedConfigPath}' | ConvertFrom-Json; `;
       scriptCmd += `& '${escapedScriptPath}' -Config $config`;
       if (isDryRun) scriptCmd += ' -DryRun';

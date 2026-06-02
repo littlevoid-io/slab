@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.disableFirewall
+$tweakEnabled = $Config.windows.disableFirewall
 $shouldUndo = $Undo -or !$tweakEnabled
 
 if ($shouldUndo) {

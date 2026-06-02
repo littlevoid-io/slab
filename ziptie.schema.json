@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ziptie configuration schema",
-  "description": "Configuration schema for @littlevoid/ziptie system bootstrapping and kiosk lockdown framework.",
+  "description": "Configuration schema for @littlevoid/ziptie system setup.",
   "type": "object",
   "properties": {
     "system": {
@@ -116,9 +116,9 @@
       },
       "required": ["provider", "allowOfflineFallback", "localInstallersPath", "apps"]
     },
-    "lockdown": {
+    "windows": {
       "type": "object",
-      "description": "Deep OS lockdown options for kiosk/exhibit deployment.",
+      "description": "Windows OS settings.",
       "properties": {
         "disableScreensaver": {
           "type": "boolean",
@@ -273,6 +273,6 @@
       ]
     }
   },
-  "required": ["system", "autologon", "startupTask", "packageManager", "lockdown"]
+  "required": ["system", "autologon", "startupTask", "packageManager", "windows"]
 }
 

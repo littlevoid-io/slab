@@ -39,9 +39,9 @@ export async function runSetupWizard(defaultConfigPath: string, userConfigPath: 
   const action = await select({
     message: 'How would you like to configure Ziptie?',
     options: [
-      { value: 'defaults', label: 'Use defaults', hint: 'Apply pre-configured stable settings' },
-      { value: 'cli', label: 'Configure via CLI', hint: 'Interactively set computer name, timezone, user, and startup task' },
-      { value: 'file', label: 'Create config file', hint: 'Generate ziptie.config.json and open it in your editor' }
+      { value: 'defaults', label: 'Use default settings', hint: 'Apply standard pre-configured settings' },
+      { value: 'cli', label: 'Configure interactively', hint: 'Set computer name, timezone, user, and startup task' },
+      { value: 'file', label: 'Create config file', hint: 'Generate ziptie.config.json and open in editor' }
     ]
   });
 
@@ -109,7 +109,7 @@ export async function runSetupWizard(defaultConfigPath: string, userConfigPath: 
     }
 
     const username = await text({
-      message: 'Autologon low-privilege username:',
+      message: 'Auto-login username:',
       placeholder: defaultConfig.autologon.username,
       initialValue: defaultConfig.autologon.username,
       validate(value) {
@@ -123,7 +123,7 @@ export async function runSetupWizard(defaultConfigPath: string, userConfigPath: 
     }
 
     const executable = await text({
-      message: 'Startup executable/batch file name (relative to C:\\Exhibit):',
+      message: 'Startup file name (relative to C:\\Exhibit):',
       placeholder: defaultConfig.startupTask.executable,
       initialValue: defaultConfig.startupTask.executable,
       validate(value) {
@@ -137,7 +137,7 @@ export async function runSetupWizard(defaultConfigPath: string, userConfigPath: 
     }
 
     const workingDir = await text({
-      message: 'Startup working directory:',
+      message: 'Startup directory:',
       placeholder: defaultConfig.startupTask.workingDir,
       initialValue: defaultConfig.startupTask.workingDir,
       validate(value) {

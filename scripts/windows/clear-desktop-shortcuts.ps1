@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.clearDesktopIcons
+$tweakEnabled = $Config.windows.clearDesktopIcons
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"

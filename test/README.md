@@ -1,6 +1,6 @@
 # Ziptie Testing Framework
 
-This directory contains the dual-layer testing suite designed for validating Ziptie's bootstrapper, declarative configuration loaders, and system-altering lockdown scripts safely.
+This directory contains the dual-layer testing suite designed for validating Ziptie's bootstrapper, declarative configuration loaders, and system-altering Windows OS settings scripts safely.
 
 ---
 
@@ -55,7 +55,7 @@ Pester 5 introduced a two-phase execution lifecycle (**Discovery** and **Run**) 
 Following the **100-line absolute code cap** specified in `AGENTS.md`, the monolithic `test/scripts.Tests.ps1` (~370 lines) has been broken down into small, cohesive, and easily maintainable modules:
 
 *   **`test/static-analysis.Tests.ps1`** (~40 lines): Focuses exclusively on auditing code quality constraints (100-line code cap check for all production files and plain-text password/secret detection checks).
-*   **`test/lockdown-loop.Tests.ps1`** (~99 lines): Dynamically runs all standard Windows lockdown scripts in Dry-Run, Mock Active, Undo, and Disabled configuration modes.
+*   **`test/windows-loop.Tests.ps1`** (~99 lines): Dynamically runs all standard Windows OS settings scripts in Dry-Run, Mock Active, Undo, and Disabled configuration modes.
 *   **`test/startup-task.Tests.ps1`** (~80 lines): Focuses specifically on the argument-splitting, literal array, and null parameter parsing behaviors of the scheduled startup task script.
 *   **`test/utils/test-helpers.ps1`** (~45 lines): Houses standard backup and restore procedures for target utility files.
 *   **`test/utils/test-mocks.ps1`** (~80 lines): Houses the unified, pure in-memory mock environment.

@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableSystemSounds
+$tweakEnabled = $Config.windows.disableSystemSounds
 $shouldUndo = $Undo -or !$tweakEnabled
 
 # Define paths to modify. Both HKCU and the Default User Hive (if mounted) are checked.

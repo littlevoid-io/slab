@@ -37,8 +37,8 @@ describe('CLI Override Parser', () => {
     expect(ctx.overrides.system?.timezone).toBe('Tokyo Standard Time');
     expect(ctx.overrides.system?.dailyReboot).toBe(false);
     expect(ctx.overrides.system?.rebootOnFinish).toBe(true);
-    expect(ctx.overrides.lockdown?.disableScreensaver).toBe(true);
-    expect(ctx.overrides.lockdown?.disableFirewall).toBe(true);
+    expect(ctx.overrides.windows?.disableScreensaver).toBe(true);
+    expect(ctx.overrides.windows?.disableFirewall).toBe(true);
     expect(ctx.overrides.packageManager?.apps).toEqual(['Node.js', 'Git.Git', 'VSCode']);
   });
 
@@ -48,15 +48,15 @@ describe('CLI Override Parser', () => {
       'dist/index.js',
       '--system.rebootTime', '04:00',
       '--system.rebootOnFinish', 'false',
-      '--lockdown.disableScreensaver', 'false',
-      '--lockdown.solidColorBackground', '#000000',
+      '--windows.disableScreensaver', 'false',
+      '--windows.solidColorBackground', '#000000',
     ];
     const ctx = parseCLI();
 
     expect(ctx.overrides.system?.rebootTime).toBe('04:00');
     expect(ctx.overrides.system?.rebootOnFinish).toBe(false);
-    expect(ctx.overrides.lockdown?.disableScreensaver).toBe(false);
-    expect(ctx.overrides.lockdown?.solidColorBackground).toBe('#000000');
+    expect(ctx.overrides.windows?.disableScreensaver).toBe(false);
+    expect(ctx.overrides.windows?.solidColorBackground).toBe('#000000');
   });
 
   test('combines hybrid flat shortcuts and dot-notation overrides', () => {
@@ -64,13 +64,13 @@ describe('CLI Override Parser', () => {
       'node',
       'dist/index.js',
       '--computerName', 'HYBRID-EXHIBIT',
-      '--lockdown.disableScreensaver', 'true',
+      '--windows.disableScreensaver', 'true',
       '--disableEdgeSwipes', 'false',
     ];
     const ctx = parseCLI();
 
     expect(ctx.overrides.system?.computerName).toBe('HYBRID-EXHIBIT');
-    expect(ctx.overrides.lockdown?.disableScreensaver).toBe(true);
-    expect(ctx.overrides.lockdown?.disableEdgeSwipes).toBe(false);
+    expect(ctx.overrides.windows?.disableScreensaver).toBe(true);
+    expect(ctx.overrides.windows?.disableEdgeSwipes).toBe(false);
   });
 });

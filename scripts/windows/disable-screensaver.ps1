@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableScreensaver
+$tweakEnabled = $Config.windows.disableScreensaver
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $policyFolder = "Software\Policies\Microsoft\Windows\Control Panel\Desktop"

@@ -1,9 +1,9 @@
 # ziptie
 ## Goals, Architecture, and Agent Mandates
 
-`ziptie` is a modern, quirky, zero-dependency, and air-gap friendly Windows 11 system bootstrapping and kiosk lockdown framework.
+`ziptie` is a modern, quirky, zero-dependency, and air-gap friendly Windows 11 system setup and bootstrapping framework.
 
-Just like a high-tensile physical ziptie, it wraps around your operating system to secure, strap down, bundle, and lock in all system configurations, establishing a perfectly clean and secure foundation supporting high-fidelity interactive museum exhibits, gallery installations, and unattended digital signage.
+Just like a high-tensile physical ziptie, it wraps around your operating system to secure, strap down, bundle, and align all system configurations, establishing a perfectly clean and secure foundation supporting high-fidelity interactive museum exhibits, gallery installations, and unattended digital signage.
 
 ---
 
@@ -86,7 +86,7 @@ Below is the conceptual blueprint for the `ziptie` configuration and execution m
       "Git.Git"
     ]
   },
-  "lockdown": {
+  "windows": {
     "disableScreensaver": true,
     "disableAccessibilityShortcuts": true,
     "disableEdgeSwipes": true,
@@ -103,7 +103,7 @@ Below is the conceptual blueprint for the `ziptie` configuration and execution m
 ### The Multi-Step Execution Pipeline
 1. **Parse & Validate**: The Node CLI reads `ziptie.config.json`, validates it against the JSON Schema, and dumps a sanitized temporary JSON payload.
 2. **Environment Assertions**: The PowerShell wrapper checks administrative privileges and runs a warning-only network latency check.
-3. **Registry Hive Mount (HKU:\DefaultUser)**: Mounts `C:\Users\Default\NTUSER.DAT` to inject all User-specific (`HKCU`) lockdown rules so that all future local user profiles (such as `exhibit`) boot fully locked down.
+3. **Registry Hive Mount (HKU:\DefaultUser)**: Mounts `C:\Users\Default\NTUSER.DAT` to inject all User-specific (`HKCU`) Windows settings so that all future local user profiles (such as `exhibit`) boot with configured settings.
 4. **App Execution & Installer Loop**: If `allowOfflineFallback` is true, scans `.\installers` and runs silent, unattended local installations.
 5. Autologon & Kiosk Shell Setup: Configures autologon and registers the startup task under the graphical user session (or configures Shell Launcher V2 to replace the Explorer shell with the exhibit application directly).
 6. Graceful Reboot: Prompts or executes a standard restart to finalize configuration.
@@ -117,9 +117,9 @@ Following strict architectural oversight, the framework has been successfully re
 ### Structural Modifications & Modular Pipeline
 - **Modular TypeScript CLI Architecture**: Decoupled `src/index.ts` into a clean orchestrator alongside highly cohesive sub-modules under `src/utils/` (`config.ts`, `elevation.ts`, `powershell.ts`) and a separate task registry `src/tasks.ts`, ensuring the CLI is fully scalable and easy to maintain.
 - **Robust Schema Blending via `deepmerge`**: Standardized recursive configuration loading and deep merging using the popular npm `deepmerge` library, completely replacing custom spread operators and ensuring automated future schema scalability.
-- **100-Line Absolute Code Cap**: To prevent monolithic sprawl and ensure maintainability, every single PowerShell file (including utilities and individual lockdown scripts) is strictly capped at under **100 lines of code**.
+- **100-Line Absolute Code Cap**: To prevent monolithic sprawl and ensure maintainability, every single PowerShell file (including utilities and individual Windows settings scripts) is strictly capped at under **100 lines of code**.
 - **Shared Utilities Integration**: Core OS routines (hive loading, hive unloading, registry writes, service status, AppX uninstalls) are cleanly decoupled into standalone helper scripts within `scripts/utils/`.
-- **Convergent Pipeline Execution**: The orchestrator runs all lockdown scripts unconditionally. Tweak scripts read configuration parameters and execute native DryRun or Undo sequences locally. This guarantees that toggling a configuration setting to `false` and re-running Ziptie automatically reverts the tweak on the next run, maintaining state synchronization.
+- **Convergent Pipeline Execution**: The orchestrator runs all Windows settings scripts unconditionally. Tweak scripts read configuration parameters and execute native DryRun or Undo sequences locally. This guarantees that toggling a configuration setting to `false` and re-running Ziptie automatically reverts the tweak on the next run, maintaining state synchronization.
 - **Decoupled Data Configurations**: Volatile structures like UWP package lists have been extracted from logic script bodies into declarative assets like `bloatware-list.json`.
 
 ### Testing Framework & Verification Loop
@@ -127,7 +127,7 @@ Following strict architectural oversight, the framework has been successfully re
 To ensure ultimate stability across diverse environments, the framework implements a dual-layer local testing architecture alongside dynamic guest Sandbox verification:
 
 - **TypeScript Unit & CLI Tests (via Bun)**: Blazing-fast, fully mocked unit tests verifying configuration loading, `deepmerge` defaults resolution, CLI argument overrides, dot-notation mapping, child process spawning, and UAC elevation checks.
-- **PowerShell Pester Unit Tests**: Non-destructive, host-safe unit testing (`test/*.Tests.ps1`) targeting the core lockdown scripts and the bootstrap loader. They mock system interactions to assert registry dry-runs, directory cleanup steps, and rollback commands safely without modifying host state.
+- **PowerShell Pester Unit Tests**: Non-destructive, host-safe unit testing (`test/*.Tests.ps1`) targeting the core Windows settings scripts and the bootstrap loader. They mock system interactions to assert registry dry-runs, directory cleanup steps, and rollback commands safely without modifying host state.
 - **Dynamic Mapped WSB Configs**: Generates sandbox XML files on the fly at `.tmp/ziptie-sandbox.wsb` and `.tmp/ziptie-sandbox-remote.wsb` (both safely gitignored), mapping the host directory to the guest desktop at `C:\Users\WDAGUtilityAccount\Desktop\ziptie`.
 - **Interactive Sandbox Spot-Checks**: Running `npm run sandbox` launches an isolated, elevated guest PowerShell terminal inside a mapped Sandbox for manual debugging, quick CLI trials, and active inspection.
 - **Automated Sandbox Verification**: Running `npm run sandbox:local` executes the end-to-end sandbox test suite (`test/run-sandbox-tests.ps1`) in the guest environment to verify active registry values and scheduled task creations.
@@ -153,7 +153,7 @@ To ensure ultimate stability across diverse environments, the framework implemen
 To align with Ziptie's design as an air-gapped, secure, and locally controlled framework, all AI coding agents operating on this codebase must strictly observe the following execution guidelines:
 
 - **Strict Local Execution (Never Push)**: Coding agents must **NEVER** push local Git commits or branches to remote upstream repositories (e.g., executing `git push` is strictly forbidden). Upstream pushing remains exclusively a human developer operation.
-- **No Direct-to-Host Configuration**: Lockdown configuration runs, registry overrides, and active OS modifications must **NEVER** be executed directly on the host development machine. All runtime tests, dry-runs, and active configurations must be run inside the isolated Windows Sandbox environment via the guest test suite (`npm run sandbox`).
+- **No Direct-to-Host Configuration**: Windows OS settings runs, registry overrides, and active OS modifications must **NEVER** be executed directly on the host development machine. All runtime tests, dry-runs, and active configurations must be run inside the isolated Windows Sandbox environment via the guest test suite (`npm run sandbox`).
 - **Mandatory Local Testing**: Before concluding a task, agents **MUST** execute the local test suite using `npm test` (or specific sub-suites like `npm run test:unit` and `npm run test:pester`) to ensure all core behaviors are completely validated and zero regressions are introduced.
 - **Strict Conventional Commits Mandate**: Every git commit message MUST strictly adhere to the conventional commit standard format of `<type>(<action>): <subject>`. The subject line MUST be strictly less than **50 characters** in length, and any verbose descriptions or list details must be moved entirely into the commit message body separated by a blank line.
 

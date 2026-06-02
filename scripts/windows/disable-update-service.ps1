@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableWindowsUpdate
+$tweakEnabled = $Config.windows.disableWindowsUpdate
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $policyAU = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"

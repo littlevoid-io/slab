@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableAccessibilityShortcuts
+$tweakEnabled = $Config.windows.disableAccessibilityShortcuts
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKCU:\Control Panel\Accessibility"

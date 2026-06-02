@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.resetTextScale
+$tweakEnabled = $Config.windows.resetTextScale
 $shouldUndo = $Undo -or !$tweakEnabled
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"

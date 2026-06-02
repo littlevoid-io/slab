@@ -37,29 +37,29 @@ function Assert-ScheduledTask {
 $config = Get-Content -Raw -Path "$ziptieRoot\ziptie.default.config.json" | ConvertFrom-Json
 Write-Host "`n--- SYSTEM STATE VERIFICATIONS ---" -ForegroundColor Yellow
 
-if ($config.lockdown.disableWindowsWidgets) {
+if ($config.windows.disableWindowsWidgets) {
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -ExpectedValue 0
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Feeds" -Name "EnableFeeds" -ExpectedValue 0
     Assert-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -ExpectedValue 0 -AllowUcpdFallback
 }
-if ($config.lockdown.disableWindowsUpdate) {
+if ($config.windows.disableWindowsUpdate) {
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -ExpectedValue 1
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -ExpectedValue 2
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ExpectedValue 1
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "TargetReleaseVersion" -ExpectedValue 1
 }
-if ($config.lockdown.disableEdgeSwipes) {
+if ($config.windows.disableEdgeSwipes) {
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EdgeUI" -Name "AllowEdgeSwipe" -ExpectedValue 0
 }
-if ($config.lockdown.disableCopilotRecall) {
+if ($config.windows.disableCopilotRecall) {
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot" -Name "TurnOffWindowsCopilot" -ExpectedValue 1
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" -Name "DisableAIDataAnalysis" -ExpectedValue 1
 }
-if ($config.lockdown.configureExplorer) {
+if ($config.windows.configureExplorer) {
     Assert-Registry -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer" -Name "ConfigureStartPins" -ExpectedValue '{"pinnedList":[]}'
     Assert-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -ExpectedValue 0
 }
-if ($config.lockdown.clearDesktopIcons) {
+if ($config.windows.clearDesktopIcons) {
     Assert-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideIcons" -ExpectedValue 1
 }
 if ($config.startupTask.enabled) { Assert-ScheduledTask -TaskName "Launch Exhibit" -TaskPath "\Ziptie\" }
@@ -68,7 +68,7 @@ if ($config.system.timezone -eq "auto") {
 }
 
 # Dynamic Background
-$bg = $config.lockdown.solidColorBackground
+$bg = $config.windows.solidColorBackground
 if ($null -ne $bg -and $bg -ne $false) {
     $rgb = "0 0 0"
     if ($bg -match '^#([A-Fa-f0-9]{6})$') {
@@ -78,11 +78,11 @@ if ($null -ne $bg -and $bg -ne $false) {
     Assert-Registry -Path "HKCU:\Control Panel\Colors" -Name "Background" -ExpectedValue $rgb
     Assert-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers" -Name "BackgroundType" -ExpectedValue 1
 }
-if ($config.lockdown.enableDarkMode) {
+if ($config.windows.enableDarkMode) {
     Assert-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "AppsUseLightTheme" -ExpectedValue 0
     Assert-Registry -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "SystemUsesLightTheme" -ExpectedValue 0
 }
-if ($config.lockdown.setPowerSettings) {
+if ($config.windows.setPowerSettings) {
     Write-Host "Asserting active power scheme..." -NoNewline
     if ((powercfg /getactivescheme) -match "77777777-7777-7777-7777-777777777777") {
         Write-Host " OK (Active Scheme: Exhibit Power Scheme)" -ForegroundColor Green

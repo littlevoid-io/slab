@@ -14,16 +14,16 @@ describe('CLI Advanced Parser', () => {
     // Mock default config to allow schema traversal
     spyOn(fs, 'existsSync').mockImplementation(() => true);
     spyOn(fs, 'readFileSync').mockImplementation(() => JSON.stringify({
-      lockdown: { disableScreensaver: true }
+      windows: { disableScreensaver: true }
     }));
 
     // Mock CLI argument inputs (yargs dot-notation negation)
-    process.argv = ['node', 'index.js', '--no-lockdown.disableScreensaver', '--no-dry-run'];
+    process.argv = ['node', 'index.js', '--no-windows.disableScreensaver', '--no-dry-run'];
 
     const ctx = parseCLI();
 
     expect(ctx.dryRun).toBe(false);
-    expect(ctx.overrides.lockdown?.disableScreensaver).toBe(false);
+    expect(ctx.overrides.windows?.disableScreensaver).toBe(false);
   });
 
   test('parses comma-separated app lists to clean arrays', () => {
@@ -79,7 +79,7 @@ describe('CLI Advanced Parser', () => {
                 computerName: { type: 'string' }
               }
             },
-            lockdown: {
+            windows: {
               type: 'object',
               properties: {
                 disableScreensaver: { type: 'boolean' }
@@ -95,6 +95,6 @@ describe('CLI Advanced Parser', () => {
 
     const ctx = parseCLI();
 
-    expect(ctx.overrides.lockdown?.disableScreensaver).toBe(true);
+    expect(ctx.overrides.windows?.disableScreensaver).toBe(true);
   });
 });

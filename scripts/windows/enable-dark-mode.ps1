@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.enableDarkMode
+$tweakEnabled = $Config.windows.enableDarkMode
 $shouldUndo = $Undo -or !$tweakEnabled
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"

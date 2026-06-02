@@ -70,6 +70,19 @@ export function loadAndMergeConfig(
       return undefined;
     }
   };
+  // Translate legacy 'lockdown' key to 'windows' for backward compatibility
+  if (userConfig.lockdown && !userConfig.windows) {
+    console.warn(
+      chalk.yellow('\n ⚠️  Warning: The "lockdown" config key is deprecated. Please rename it to "windows" in your config file.')
+    );
+    userConfig.windows = userConfig.lockdown;
+    delete userConfig.lockdown;
+  }
+  if (cliOverrides && cliOverrides.lockdown && !cliOverrides.windows) {
+    cliOverrides.windows = cliOverrides.lockdown;
+    delete cliOverrides.lockdown;
+  }
+
   let mergedConfig = deepmerge(defaultConfig, userConfig, mergeOptions);
   if (cliOverrides && Object.keys(cliOverrides).length > 0) {
     mergedConfig = deepmerge(mergedConfig, cliOverrides, mergeOptions);

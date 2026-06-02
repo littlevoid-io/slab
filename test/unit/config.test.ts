@@ -28,7 +28,7 @@ describe('Config Utility', () => {
         return JSON.stringify({
           system: { computerName: 'DEFAULT-EXHIBIT', timezone: 'UTC' },
           packageManager: { apps: ['App1', 'App2'] },
-          lockdown: { disableScreensaver: true, disableWidgets: true }
+          windows: { disableScreensaver: true, disableWidgets: true }
         });
       }
       if (target.endsWith('ziptie.config.json')) {
@@ -46,18 +46,18 @@ describe('Config Utility', () => {
     // Call loadAndMergeConfig with custom CLI overrides
     const { config } = loadAndMergeConfig(null, {
       system: { timezone: 'Tokyo Standard Time' },
-      lockdown: { disableScreensaver: false },
+      windows: { disableScreensaver: false },
       packageManager: { apps: ['App4'] }
     });
 
     // Asserts:
     // 1. Defaults loaded
-    expect(config.lockdown.disableWidgets).toBe(true);
+    expect(config.windows.disableWidgets).toBe(true);
     // 2. User config merged over defaults
     expect(config.system.computerName).toBe('USER-CUSTOM');
     // 3. CLI overrides merged over user config and defaults
     expect(config.system.timezone).toBe('Tokyo Standard Time');
-    expect(config.lockdown.disableScreensaver).toBe(false);
+    expect(config.windows.disableScreensaver).toBe(false);
     // 4. Apps array is overwritten instead of merged (user config and then CLI override)
     expect(config.packageManager.apps).toEqual(['App4']);
 
@@ -69,7 +69,7 @@ describe('Config Utility', () => {
     const consoleSpy = spyOn(console, 'log').mockImplementation(() => {});
     const sampleConfig = {
       system: { computerName: 'TEST-PC' },
-      lockdown: { disableFirewall: true }
+      windows: { disableFirewall: true }
     };
 
     printConfig(sampleConfig);
@@ -184,7 +184,7 @@ describe('Config Utility', () => {
     printConfig(sampleConfig);
 
     const calls = consoleSpy.mock.calls.map(call => call.join(' '));
-    expect(calls.some(c => c.includes('[StartupTask Settings]'))).toBe(true);
+    expect(calls.some(c => c.includes('[StartupTask]'))).toBe(true);
 
     consoleSpy.mockRestore();
     fsExistsSpy.mockRestore();

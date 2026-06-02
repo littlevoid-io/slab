@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableMaxPathLength
+$tweakEnabled = $Config.windows.disableMaxPathLength
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"

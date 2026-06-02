@@ -1,6 +1,6 @@
 # @littlevoid/ziptie
 
-A zero-dependency Windows 11 system bootstrapping and kiosk lockdown framework. It configures and locks down Windows installations to run interactive media installations and unattended digital signage.
+A zero-dependency Windows 11 system setup and bootstrapping framework. It configures Windows settings to run interactive media installations and unattended digital signage.
 
 ---
 
@@ -56,7 +56,7 @@ npm start
 ```
 
 ### 6. Revert Configuration
-To revert the applied lockdowns and restore default OS settings:
+To revert the applied Windows OS settings and restore default system settings:
 ```bash
 npm start -- --undo
 ```
@@ -66,7 +66,7 @@ You can dynamically override any parameter in `ziptie.config.json` directly from
 
 * **Direct Dot-Notation**: Pass the full category and parameter path.
   ```bash
-  npm start -- --lockdown.disableScreensaver=false --system.computerName="EXHIBIT-99"
+  npm start -- --windows.disableScreensaver=false --system.computerName="EXHIBIT-99"
   ```
 * **Smart Flat Shortcuts**: If a parameter name is unique in the configuration, you can omit the category! The engine will dynamically map it to its nested path and auto-cast the value to its correct primitive type (booleans, numbers, or comma-separated lists):
   ```bash
@@ -74,7 +74,7 @@ You can dynamically override any parameter in `ziptie.config.json` directly from
   ```
 * **Combinations**: You can mix and match standard flags, dot-notation, and shortcuts in a single command:
   ```bash
-  npm start -- -y -d --computerName "EXHIBIT-02" --lockdown.disableEdgeSwipes=false
+  npm start -- -y -d --computerName "EXHIBIT-02" --windows.disableEdgeSwipes=false
   ```
 
 
@@ -180,18 +180,18 @@ This will automatically:
 
 ## Core Features
 
-Ziptie automates the configuration and lockdown required for public, unattended interactive systems:
+Ziptie automates the configuration and preparation required for public, unattended interactive systems:
 * **System Settings**: Configures hostname, timezone, power scheme (High Performance, no sleep), and schedules daily reboots.
 * **Autologon & Startup**: Configures automatic user login and schedules startup tasks to run at GUI session logon (`AtLogon`).
 * **Package Management**: Uninstalls Windows bloatware/OneDrive, and silently installs offline application installers (`.exe`, `.msi`) from the `./installers/` directory.
-* **Security & Lockdown**: Disables Windows Update, edge swipes, touch feedback, OOBE prompts, desktop icons, and OS notifications.
+* **Windows OS Settings**: Disables Windows Update, edge swipes, touch feedback, OOBE prompts, desktop icons, and OS notifications.
 
 ---
 
 ## How It Works
 
 1. **Config Engine**: The CLI parses `ziptie.config.json` against the JSON schema, merging user overrides with defaults via `deepmerge`.
-2. **Hive Mounting**: The orchestrator mounts the Windows Default User Registry Hive (`C:\Users\Default\NTUSER.DAT`) to `HKU:\DefaultUser` so newly created user accounts automatically inherit lockdown policies.
+2. **Hive Mounting**: The orchestrator mounts the Windows Default User Registry Hive (`C:\Users\Default\NTUSER.DAT`) to `HKU:\DefaultUser` so newly created user accounts automatically inherit configured Windows settings.
 3. **Execution**: Runs convergent PowerShell configuration scripts from `scripts/windows/`.
 4. **Architecture**:
    * **Modular CLI**: Decoupled into specialized modules (`elevation.ts`, `powershell.ts`, `config.ts`) and a task registry (`tasks.ts`).

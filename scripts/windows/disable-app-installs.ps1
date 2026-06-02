@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableAppInstalls
+$tweakEnabled = $Config.windows.disableAppInstalls
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"

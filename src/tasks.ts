@@ -1,4 +1,4 @@
-export interface LockdownTaskSpec {
+export interface WindowsTaskSpec {
   title: string;
   file: string;
   action?: string;
@@ -6,7 +6,7 @@ export interface LockdownTaskSpec {
   configKey: string;
 }
 
-export const OS_LOCKDOWN_TASKS: LockdownTaskSpec[] = [
+export const OS_WINDOWS_TASKS: WindowsTaskSpec[] = [
   { title: 'Windows Widgets', file: 'disable-windows-widgets.ps1', configKey: 'disableWindowsWidgets' },
   { title: 'Copilot & Recall AI', file: 'disable-copilot-recall.ps1', configKey: 'disableCopilotRecall' },
   { title: 'Windows Update Policies', file: 'disable-update-service.ps1', action: 'Configuring', undoAction: 'Restoring', configKey: 'disableWindowsUpdate' },

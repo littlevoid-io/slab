@@ -134,20 +134,20 @@ export function showHelp(): void {
     // Fallback if files aren't found/readable
   }
 
-  console.log(chalk.bold.cyan('\n 🪢 Ziptie System Setup & Lockdown CLI'));
+  console.log(chalk.bold.cyan('\n 🪢 Ziptie System Setup CLI'));
   console.log(`\n ${chalk.bold('Usage:')} ziptie [options] [overrides]`);
 
-  console.log(`\n ${chalk.bold.yellow('Standard Options:')}`);
-  console.log(`   -c, --config <path>    ${chalk.dim('Path to a custom ziptie.config.json file')}`);
-  console.log(`   -d, --dry-run          ${chalk.dim('Safe, read-only verification mode (no changes made)')}`);
-  console.log(`   -u, --undo             ${chalk.dim('Reverts all active system tweaks and lockdowns')}`);
-  console.log(`   -y, --yes              ${chalk.dim('Auto-confirm all prompts (non-interactive / silent)')}`);
-  console.log(`   -h, --help             ${chalk.dim('Show this help documentation')}`);
+  console.log(`\n ${chalk.bold.yellow('Options:')}`);
+  console.log(`   -c, --config <path>    ${chalk.dim('Path to custom config file')}`);
+  console.log(`   -d, --dry-run          ${chalk.dim('Safe dry-run mode (no changes are made)')}`);
+  console.log(`   -u, --undo             ${chalk.dim('Reverts all changes and restores defaults')}`);
+  console.log(`   -y, --yes              ${chalk.dim('Auto-confirm all prompts (silent mode)')}`);
+  console.log(`   -h, --help             ${chalk.dim('Show help menu')}`);
 
   if (schema && schema.properties && defaultConfig) {
-    console.log(`\n ${chalk.bold.yellow('Dynamic Configuration Overrides:')}`);
-    console.log(`   ${chalk.dim('Override any parameter in the config. Values are automatically cast to target types.')}`);
-    console.log(`   ${chalk.dim('Format: --<category>.<setting> <value>  OR  --<setting> <value> (shortcut)')}\n`);
+    console.log(`\n ${chalk.bold.yellow('Settings Overrides:')}`);
+    console.log(`   ${chalk.dim('Override config settings directly from the command line.')}`);
+    console.log(`   ${chalk.dim('Format: --<setting> <value> (e.g. --computerName EXHIBIT-01)')}\n`);
 
     const categories = Object.keys(schema.properties);
     for (const cat of categories) {
@@ -278,7 +278,7 @@ export function parseCLI(): CLIContext {
 
     const value = argv[argKey];
 
-    // Case A: Nested/Categorized override (e.g. --lockdown.disableScreensaver=false)
+    // Case A: Nested/Categorized override (e.g. --windows.disableScreensaver=false)
     if (categories.includes(argKey) && typeof value === 'object' && value !== null) {
       for (const nestedKey of Object.keys(value)) {
         const nestedPath = [argKey, nestedKey];

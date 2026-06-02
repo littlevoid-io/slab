@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.disableWindowsWidgets
+$tweakEnabled = $Config.windows.disableWindowsWidgets
 $shouldUndo = $Undo -or !$tweakEnabled
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"

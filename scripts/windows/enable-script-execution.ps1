@@ -6,7 +6,7 @@ Param(
     [Switch]$Undo
 )
 
-$tweakEnabled = $Config.lockdown.enableScriptExecution
+$tweakEnabled = $Config.windows.enableScriptExecution
 $shouldUndo = $Undo -or !$tweakEnabled
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"

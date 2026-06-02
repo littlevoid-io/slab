@@ -6,7 +6,7 @@ Param(
 
 . "$PSScriptRoot/../utils/ziptie-init.ps1"
 
-$tweakEnabled = $Config.lockdown.disableTouchGestures
+$tweakEnabled = $Config.windows.disableTouchGestures
 $shouldUndo = $Undo -or !$tweakEnabled
 
 $path = "HKCU:\Control Panel\Desktop"
