@@ -127,7 +127,7 @@ export class ColumnRenderer implements ListrRenderer {
   private mergeColumns(left: string[], right: string[]): string[] {
     const maxLines = Math.max(left.length, right.length);
     const result: string[] = [];
-    const width = this.animationConfig.metadata.width || 25;
+    const offset = Math.max(left.length - right.length, 0);
 
     for (let i = 0; i < maxLines; i++) {
       const leftLine = left[i] || '';
@@ -135,7 +135,8 @@ export class ColumnRenderer implements ListrRenderer {
       const padWidth = Math.max(50 - cleanLeft.length, 0);
       const spacer = ' '.repeat(padWidth) + chalk.cyan('│') + ' ';
 
-      const rightLine = right[i] || '';
+      const rightIndex = i - offset;
+      const rightLine = rightIndex >= 0 && rightIndex < right.length ? right[rightIndex] : '';
       result.push(leftLine + spacer + chalk.bold.magenta(rightLine));
     }
     return result;
