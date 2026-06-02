@@ -46,11 +46,10 @@ export class ColumnRenderer implements ListrRenderer {
 
   public render(): void {
     process.stdout.write('\u001b[?25l');
-    const speed = this.animationConfig.metadata.speedMs || 150;
     this.interval = setInterval(() => {
       this.currentFrameIndex = (this.currentFrameIndex + 1) % this.animationConfig.frames.length;
       this.draw();
-    }, speed);
+    }, this.animationConfig.metadata.speedMs || 150);
 
     this.subscribeToTasks(this.tasks);
   }
@@ -100,22 +99,22 @@ export class ColumnRenderer implements ListrRenderer {
   private formatTask(task: any, lines: string[], depth = 0): void {
     const indent = ' '.repeat(depth * 2);
     let statusIcon = '.';
-    
     if (task.isCompleted()) statusIcon = chalk.green('√');
     else if (task.hasFailed()) statusIcon = chalk.red('x');
     else if (task.isSkipped()) statusIcon = chalk.yellow('-');
     else if (task.isPending()) statusIcon = chalk.cyan('>');
 
-    const title = task.title || 'Untitled';
-    lines.push(`${indent}${statusIcon} ${title}`);
+    lines.push(`${indent}${statusIcon} ${task.title || 'Untitled'}`);
 
-    if (task.hasSubtasks()) {
-      task.subtasks.forEach(sub => this.formatTask(sub, lines, depth + 1));
+    if (task.hasSubtasks() && (!task.isCompleted() || depth > 0)) {
+      const subs = task.subtasks;
+      const active = depth === 0 ? Math.max(0, subs.findIndex((s: any) => s.isPending()) - 1) : 0;
+      subs.forEach((s: any, idx: number) => idx >= active && this.formatTask(s, lines, depth + 1));
     }
   }
 
   private mergeColumns(left: string[], right: string[]): string[] {
-    const FIXED_HEIGHT = 15;
+    const FIXED_HEIGHT = 18;
     let leftLines = left;
     if (leftLines.length > FIXED_HEIGHT) {
       leftLines = leftLines.slice(-FIXED_HEIGHT);
