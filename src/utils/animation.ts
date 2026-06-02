@@ -19,26 +19,18 @@ const defaultAnimation: AnimationConfig = {
   ]
 };
 export function loadVersion(root: string): string {
-  const packagePath = path.join(root, 'package.json');
-  if (fs.existsSync(packagePath)) {
-    try {
-      return JSON.parse(fs.readFileSync(packagePath, 'utf8')).version || '1.0.0';
-    } catch {
-      return '1.0.0';
-    }
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version || '1.0.0';
+  } catch {
+    return '1.0.0';
   }
-  return '1.0.0';
 }
 export function loadConfig(root: string): AnimationConfig {
-  const configPath = path.join(root, 'ziptie.animation.json');
-  if (fs.existsSync(configPath)) {
-    try {
-      return JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    } catch {
-      return defaultAnimation;
-    }
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, 'ziptie.animation.json'), 'utf8'));
+  } catch {
+    return defaultAnimation;
   }
-  return defaultAnimation;
 }
 
 export class ColumnRenderer implements ListrRenderer {
@@ -95,8 +87,18 @@ export class ColumnRenderer implements ListrRenderer {
     const tasksOutput: string[] = [];
     this.tasks.forEach(task => this.formatTask(task, tasksOutput));
 
+    const width = this.animationConfig.metadata.width || 25;
     const rawFrame = this.animationConfig.frames[this.currentFrameIndex];
-    const rightColumn = rawFrame.map(line => line.replace(/\{\{VERSION\}\}/g, this.version));
+    const rightColumn = rawFrame.map(line => {
+      if (line.includes('{{VERSION}}')) {
+        const text = `ziptie v${this.version}`;
+        const padTotal = width - text.length;
+        const padLeft = Math.floor(padTotal / 2);
+        const padRight = padTotal - padLeft;
+        return ' '.repeat(padLeft) + text + ' '.repeat(padRight);
+      }
+      return line;
+    });
     const mergedOutput = this.mergeColumns(tasksOutput, rightColumn);
 
     if (this.lastLineCount > 0) {
