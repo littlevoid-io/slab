@@ -77,12 +77,12 @@ describe('Config Utility', () => {
     expect(consoleSpy).toHaveBeenCalled();
     const calls = consoleSpy.mock.calls.map(call => call.join(' '));
     expect(calls.some(c => c.includes('TEST-PC'))).toBe(true);
-    expect(calls.some(c => c.includes('disableFirewall'))).toBe(true);
+    expect(calls.some(c => c.includes('Disable Firewall'))).toBe(true);
 
     consoleSpy.mockRestore();
   });
 
-  test('printConfig does not print array if elements match default regardless of order', () => {
+  test('printConfig does not highlight array if elements match default regardless of order', () => {
     const consoleSpy = spyOn(console, 'log').mockImplementation(() => {});
     const sampleConfig = {
       packageManager: {
@@ -93,7 +93,7 @@ describe('Config Utility', () => {
     printConfig(sampleConfig);
 
     const calls = consoleSpy.mock.calls.map(call => call.join(' '));
-    expect(calls.some(c => c.includes('[PackageManager Settings]'))).toBe(false);
+    expect(calls.some(c => c.includes('default:'))).toBe(false);
 
     consoleSpy.mockRestore();
   });
@@ -184,7 +184,7 @@ describe('Config Utility', () => {
     printConfig(sampleConfig);
 
     const calls = consoleSpy.mock.calls.map(call => call.join(' '));
-    expect(calls.some(c => c.includes('[StartupTask]'))).toBe(true);
+    expect(calls.some(c => c.includes('Startup Task:'))).toBe(true);
 
     consoleSpy.mockRestore();
     fsExistsSpy.mockRestore();
