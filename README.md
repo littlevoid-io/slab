@@ -1,199 +1,180 @@
-# @littlevoid/ziptie
+# ZipTie
 
-A zero-dependency Windows 11 system setup and bootstrapping framework. It configures Windows settings to run interactive media installations and unattended digital signage.
+Zero-dependency Windows 11 system bootstrapping framework for public exhibits, gallery installations, and unattended digital signage.
 
----
+## What it Does
+
+* **System Settings**: Configures hostname, timezone, high-performance power plan, and daily reboot schedules.
+* **Windows Customization**: Disables updates, edge swipes, touch feedback, OOBE prompts, screensavers, and notifications.
+* **Package Management**: Installs apps like NVM, git, VS Code, uninstalls bloatware like OneDrive
+* **Autologon & Startup**: Configures automatic login and startup tasks.
 
 ## One-Line Install
 
-To bootstrap a new Windows 11 system from scratch with **zero dependencies pre-installed** (no Git or Node.js required), open **PowerShell as Administrator** and run:
+Run from CMD or PowerShell to bootstrap a fresh system:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/littlevoid-io/ziptie/main/scripts/bootstrap.ps1 | iex"
 ```
 
-This script will:
-1. Check for and request UAC elevation.
-2. Download and extract the latest precompiled Ziptie release locally.
-3. Execute the standalone `dist\ziptie.exe` binary.
-4. Launch the setup assistant to configure the system.
-
-### Passing CLI Arguments to the Cloud Installer
-You can execute the cloud installer with automated confirmation flags, safe dry-runs, or custom configuration overrides by running it as a script block and passing the `-ExtraArgs` parameter:
+To pass parameters to the installer:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -Command "& ([scriptblock]::Create((irm https://raw.githubusercontent.com/littlevoid-io/ziptie/main/scripts/bootstrap.ps1))) -ExtraArgs '-y -d --timezone \"Tokyo Standard Time\" --disableScreensaver false'"
 ```
 
----
-
 ## Quick Start
 
-### 1. Prerequisites
-* **Windows 11** or **Windows 10**
-* **Node.js** (v18 or higher)
+### 1. Install & Build
 
-### 2. Installation
-Clone the repository and compile the TypeScript engine:
-```bash
-npm install
-npm run build
+```powershell
+npm install; npm run build
 ```
 
-### 3. Configuration
-Customize settings in `ziptie.config.json` at the root of the repository. Open the file in VS Code to get auto-completion, schema validation, and description tooltips defined in `ziptie.schema.json`.
+### 2. Execution Commands
 
-### 4. Run Dry-Run (Safe Preview)
-To preview configuration changes without modifying the registry or system state:
-```bash
-npm start -- --dry-run
-```
+| Command | Action |
+| :--- | :--- |
+| `npm start` | Apply configuration (requires elevation) |
+| `npm start -- --dry-run` | Preview changes without modifying system state |
+| `npm start -- --undo` | Revert applied configuration |
+| `npm start -- <overrides>` | Apply with parameter overrides |
 
-### 5. Apply Configuration
-Apply the configuration (requires UAC elevation):
-```bash
-npm start
-```
+Configure settings in `ziptie.config.json`. Schema validation is provided via `ziptie.schema.json`.
 
-### 6. Revert Configuration
-To revert the applied Windows OS settings and restore default system settings:
-```bash
-npm start -- --undo
-```
+## CLI Overrides
 
-### 7. Command Line Overrides
-You can dynamically override any parameter in `ziptie.config.json` directly from the CLI. This is extremely useful for remote scripting, silent RMM deployments, or multi-machine provisioning:
+Override configuration parameters using command-line arguments:
 
-* **Direct Dot-Notation**: Pass the full category and parameter path.
-  ```bash
+* **Dot-Notation**: Target nested keys explicitly.
+  ```powershell
   npm start -- --windows.disableScreensaver=false --system.computerName="EXHIBIT-99"
   ```
-* **Smart Flat Shortcuts**: If a parameter name is unique in the configuration, you can omit the category! The engine will dynamically map it to its nested path and auto-cast the value to its correct primitive type (booleans, numbers, or comma-separated lists):
-  ```bash
+* **Flat Shortcuts**: Omit categories for unique keys. The engine auto-casts values.
+  ```powershell
   npm start -- --timezone "Tokyo Standard Time" --disableScreensaver true --apps "Node.js,Git.Git"
   ```
-* **Combinations**: You can mix and match standard flags, dot-notation, and shortcuts in a single command:
-  ```bash
+* **Combined Flags**:
+  ```powershell
   npm start -- -y -d --computerName "EXHIBIT-02" --windows.disableEdgeSwipes=false
   ```
 
+#### Parameters
 
----
+<details>
+<summary>View all available configuration parameters</summary>
 
-## Development
+| Key | Type | Description |
+| :--- | :--- | :--- |
+| `system.computerName` | string | Hostname of the system. |
+| `system.timezone` | string | System timezone registry value or `auto`. |
+| `system.dailyReboot` | boolean | Configures daily reboot task. |
+| `system.rebootTime` | string | Time of reboot (e.g., `06:00`). |
+| `system.rebootOnFinish` | boolean | Reboots machine when Ziptie finishes applying. |
+| `autologon.enabled` | boolean | Enforces passwordless auto-login for user. (Requires dot-notation) |
+| `autologon.username` | string | OS user account targeted for auto-login. |
+| `autologon.disablePasswordlessHello` | boolean | Disables Windows Hello passwordless enforcement. |
+| `startupTask.enabled` | boolean | Creates a scheduled task running at GUI logon. (Requires dot-notation) |
+| `startupTask.workingDir` | string | Directory from which target executable starts. |
+| `startupTask.executable` | string | Executable path/name to launch. |
+| `startupTask.args` | array | Command line arguments. |
+| `startupTask.trigger` | string | Trigger constraint (default: `AtLogon`). |
+| `startupTask.delay` | string | Delay before launch (e.g., `PT1M`). |
+| `packageManager.provider` | string | Package manager CLI tool (`winget` or `choco`). |
+| `packageManager.allowOfflineFallback` | boolean | Searches `.\installers` for silent installers if offline. |
+| `packageManager.localInstallersPath` | string | Folder path for local offline installer files. |
+| `packageManager.apps` | array | App package IDs or Chocolatey names to install. |
+| `windows.disableScreensaver` | boolean | Disables lockscreen, sleep, and screensavers. |
+| `windows.disableAccessibilityShortcuts` | boolean | Blocks Shift-key accessibility triggers. |
+| `windows.disableEdgeSwipes` | boolean | Disables touch swipes from monitor edges. |
+| `windows.disableTouchFeedback` | boolean | Disables visual touch pointer indicators. |
+| `windows.disableSystemSounds` | boolean | Disables standard system-event audio alerts. |
+| `windows.disableWindowsUpdate` | boolean | Disables Windows Update services and tasks. |
+| `windows.disableWindowsWidgets` | boolean | Disables widgets and news feeds from taskbar. |
+| `windows.disableCopilotRecall` | boolean | Disables Windows Copilot and Recall tracking. |
+| `windows.disableOOBEPrompts` | boolean | Blocks post-update configuration prompt displays. |
+| `windows.clearDesktopIcons` | boolean | Removes all default shortcuts from public desktop. |
+| `windows.solidColorBackground` | string | Sets desktop to a hex-coded solid color (e.g., `#333333`). |
+| `windows.enableDarkMode` | boolean | Forces dark theme across Windows UI. |
+| `windows.configureExplorer` | boolean | Displays file extensions, hidden files, and simplifies layout. |
+| `windows.disableAppInstalls` | boolean | Blocks Microsoft Store background app provisioning. |
+| `windows.disableAppRestore` | boolean | Blocks automatic AppX restoration behavior. |
+| `windows.disableErrorReporting` | boolean | Disables Windows error popup reporting. |
+| `windows.disableFirewall` | boolean | Disables Windows Defender Firewall rules. |
+| `windows.disableMaxPathLength` | boolean | Extends NTFS 260 character directory limits. |
+| `windows.disableNewNetworkWindow` | boolean | Disables new overlay network panel flyouts. |
+| `windows.disableNotifications` | boolean | Disables standard Windows Action Center toast notifications. |
+| `windows.disableTouchGestures` | boolean | Disables multi-finger touch controls. |
+| `windows.enableScriptExecution` | boolean | Unlocks local PowerShell execution restrictions. |
+| `windows.resetTextScale` | boolean | Forces text size settings back to 100%. |
+| `windows.uninstallBloatware` | boolean | Automatically uninstalls bundled bloatware packages. |
+| `windows.uninstallOneDrive` | boolean | Completely uninstalls and disables OneDrive. |
+| `windows.unpinStartMenuApps` | boolean | Removes pinned default apps from the Start menu. |
+| `windows.setPowerSettings` | boolean | Forces system to the Ultimate/High Performance power plan. |
 
-### Local Bootstrap Simulation (One-Liner)
+</details>
 
-To test, debug, or verify the bootstrapping process locally without fetching from GitHub, you can execute the bootstrap script directly from your local repository. The script will automatically detect the local repository and copy its release assets (e.g., `dist/ziptie.exe`, `scripts/`, etc.) to the target installation directory instead of downloading the zip from GitHub:
+## Development & Testing
+
+### Local Simulation
+
+To simulate bootstrapping using local assets:
 
 ```powershell
-# -InstallDir specifies the target destination folder where files are copied.
-# (Defaults to current directory, or safely falls back to C:\Users\<Name>\Downloads\ziptie if run inside the repo)
-powershell -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1 -InstallDir "C:\ziptie-dev"
+powershell -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1 -InstallDir "C:\ziptie-dev" -ExtraArgs "-d -y"
 ```
 
-You can also pass custom configuration overrides, silent install confirmations, or dry-run flags directly to the copied executable via the `-ExtraArgs` parameter:
+### Test Commands
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1 -InstallDir "C:\ziptie-dev" -ExtraArgs "-d -y --timezone `"Tokyo Standard Time`""
+| Command | Target |
+| :--- | :--- |
+| `npm test` | Run entire test suite (TypeScript & Pester) |
+| `npm run test:unit` | Run TypeScript unit tests |
+| `npm run test:cli` | Run CLI integration tests |
+| `npm run test:pester` | Run PowerShell Pester unit tests |
+
+### Windows Sandbox Verification
+
+Verify configuration behaviors in an isolated Windows Sandbox:
+
+| Command | Action |
+| :--- | :--- |
+| `npm run sandbox` | Mount repository to guest Desktop and open interactive guest console |
+| `npm run sandbox:local` | Mount repository and run automated guest tests (`test/run-sandbox-tests.ps1`) |
+| `npm run sandbox:remote` | Launch clean sandbox and run the remote cloud bootstrap script |
+
+## Releases
+
+1. Configure `GITHUB_TOKEN` in `.env`:
+   ```env
+   GITHUB_TOKEN=your_token
+   ```
+2. Build and publish:
+   ```powershell
+   npm run release
+   ```
+## Execution Pipeline
+
+1. **Schema Validation**: Parses `ziptie.config.json` against `ziptie.schema.json` and deep-merges with defaults.
+2. **Hive Mounting**: Mounts `C:\Users\Default\NTUSER.DAT` to `HKU:\DefaultUser` so future users inherit customized user settings.
+3. **App Provisioning**: Scans `./installers` for offline installers or uses `winget`/`choco` fallbacks.
+4. **Tweak Execution**: Runs convergent scripts in `scripts/windows/` for apply or revert (`-Undo`) operations.
+
+```mermaid
+---
+config:
+    flowchart:
+        defaultRenderer: elk
+        inheritDir: false
+---
+flowchart LR
+    subgraph Bootstrap
+        A(Start) --> B(Load Config) --> C(Wizard)
+    end
+    
+    subgraph Execution
+        G1[Mount Hive] --> G2[Install Apps] --> G3[Run Tweaks] --> G4[Uninstall Apps] --> G5[Unmount Hive]
+    end
+    
+    C --> G1
 ```
-
-
----
-
-## Testing
-
-Ziptie features a comprehensive, dual-layer test suite to ensure robust configuration parsing, correct CLI argument handling, and safe PowerShell scripts before execution on any target machine.
-
-### 1. Test Architecture
-*   **TypeScript Unit & CLI Tests (via Bun)**: Blazing-fast, mock-driven tests validating CLI overrides, dot-notation mapping, configuration deep merging, and elevation status checks.
-*   **PowerShell Pester Unit Tests**: Non-destructive Pester unit tests confirming dry-run execution, script revertibility (`-Undo`), installer cleanups, and local simulation paths safely without modifying host configurations.
-*   **Isolated Sandbox Environments**: Automated and interactive Windows Sandbox workflows verifying complete system configuration changes, registry states, scheduled task triggers, and dynamic WinGet provisioning.
-
-### 2. Running Local Tests
-You can execute tests locally on your development system using the npm scripts:
-
-*   **Run Entire Test Suite (TypeScript + Pester)**:
-    ```bash
-    npm test
-    ```
-*   **Run TypeScript Unit Tests Only**:
-    ```bash
-    npm run test:unit
-    ```
-*   **Run CLI Integration Tests Only**:
-    ```bash
-    npm run test:cli
-    ```
-*   **Run Pester Unit Tests Only**:
-    ```bash
-    npm run test:pester
-    ```
-
-### 3. Run Isolated Sandbox Environments
-Safely verify active registry modifications, Winget/Chocolatey installers, and the bootstrapping pipeline without any host system drift:
-
-*   **Interactive Mapped Sandbox (Default)**:
-    Mounts the repository directly to the guest User Desktop (`C:\Users\WDAGUtilityAccount\Desktop\ziptie`) and launches an elevated interactive PowerShell prompt without executing automated tests:
-    ```bash
-    npm run sandbox
-    ```
-    This is highly useful for manual spot-checks, interactive CLI testing, and active step-by-step experimentation.
-
-*   **Automated Local Integration Tests**:
-    Mounts the repository directly to the guest User Desktop and automatically executes the end-to-end integration test suite (`test/run-sandbox-tests.ps1`) to assert system configuration state:
-    ```bash
-    npm run sandbox:local
-    ```
-
-*   **Clean Remote Cloud Installer**:
-    Launches a completely fresh guest environment with **no local folders mounted** (simulating a pure target machine with internet access) and executes the GitHub one-line bootstrap installer (`irm | iex`) from the current branch automatically at logon:
-    ```bash
-    npm run sandbox:remote
-    ```
-
----
-
-## Creating a Release
-
-To package a new release and publish it directly to GitHub:
-
-### 1. Configure the GitHub Token
-Add your GitHub Personal Access Token (PAT) to a `.env` file in the repository root:
-```env
-GITHUB_TOKEN=your_personal_access_token_here
-```
-
-### 2. Run the Release Script
-```bash
-npm run release
-```
-
-This will automatically:
-1. Prompt for the next version increment (`patch`, `minor`, `major`).
-2. Update version files and create a local Git commit and tag.
-3. Build the standalone `dist\ziptie.exe` binary.
-4. Package assets (`dist\ziptie.exe`, `scripts/`, default config, and `setup.bat`) into `ziptie.zip`.
-5. Deploy to GitHub via the REST API and attach the zip archive as a release asset.
-
----
-
-## Core Features
-
-Ziptie automates the configuration and preparation required for public, unattended interactive systems:
-* **System Settings**: Configures hostname, timezone, power scheme (High Performance, no sleep), and schedules daily reboots.
-* **Autologon & Startup**: Configures automatic user login and schedules startup tasks to run at GUI session logon (`AtLogon`).
-* **Package Management**: Uninstalls Windows bloatware/OneDrive, and silently installs offline application installers (`.exe`, `.msi`) from the `./installers/` directory.
-* **Windows OS Settings**: Disables Windows Update, edge swipes, touch feedback, OOBE prompts, desktop icons, and OS notifications.
-
----
-
-## How It Works
-
-1. **Config Engine**: The CLI parses `ziptie.config.json` against the JSON schema, merging user overrides with defaults via `deepmerge`.
-2. **Hive Mounting**: The orchestrator mounts the Windows Default User Registry Hive (`C:\Users\Default\NTUSER.DAT`) to `HKU:\DefaultUser` so newly created user accounts automatically inherit configured Windows settings.
-3. **Execution**: Runs convergent PowerShell configuration scripts from `scripts/windows/`.
-4. **Architecture**:
-   * **Modular CLI**: Decoupled into specialized modules (`elevation.ts`, `powershell.ts`, `config.ts`) and a task registry (`tasks.ts`).
-   * **100-Line Code Cap**: All script and utility files are strictly capped under 100 lines for maintainability.
-   * **Convergent Execution**: Scripts run in both apply and revert (`-Undo`) modes.
